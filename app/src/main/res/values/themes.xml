@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for Day mode -->
+    <style name="Theme.PrimerParcial" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+    </style>
+
+    <!-- Custom light theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Desactiva el ActionBar y el título -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Colores personalizados -->
+        <item name="colorPrimary">@color/blue</item> <!-- Color principal de la aplicación -->
+        <item name="colorPrimaryDark">@color/deep_orange</item> <!-- Color de la barra de estado -->
+        <item name="colorAccent">@color/green</item> <!-- Color de acento para botones y controles interactivos -->
+        <item name="android:statusBarColor">@color/oscuro</item> <!-- Color de la barra de estado -->
+        <item name="android:navigationBarColor">@color/black</item> <!-- Color de la barra de navegación -->
+        <item name="android:background">@color/celeste</item> <!-- Fondo de la aplicación -->
+    </style>
+</resources>

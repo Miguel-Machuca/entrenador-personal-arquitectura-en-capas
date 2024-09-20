@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue">#007BFF</color>
+    <color name="green">#4CAF50</color>
+
+    <color name="oscuro">#2C3E50</color>"
+
+    <!-- Nuevos colores -->
+    <color name="red">#FF5252</color> <!-- Un rojo vibrante -->
+    <color name="purple">#9C27B0</color> <!-- Un púrpura brillante -->
+    <color name="yellow">#FFEB3B</color> <!-- Un amarillo cálido -->
+    <color name="orange">#FF9800</color> <!-- Un naranja enérgico -->
+    <color name="cyan">#00BCD4</color> <!-- Un cian fresco -->
+    <color name="pink">#E91E63</color> <!-- Un rosado llamativo -->
+    <color name="deep_orange">#FF5722</color> <!-- Naranja profundo -->
+    <color name="lime">#CDDC39</color> <!-- Un lima refrescante -->
+    <color name="teal">#009688</color> <!-- Un color verde azulado suave -->
+    <color name="celeste">#CCEEF7</color> <!-- Un color verde azulado suave -->
+</resources>

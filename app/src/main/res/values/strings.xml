@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Entrenador Personal</string>
+    <string name="str_gestionar_ejercicio">Gestionar Ejercicio</string>
+    <string name="str_gestionar_objetivo">Gestionar Objetivo</string>
+    <string name="str_gestionar_cliente">Gestionar Cliente</string>
+    <string name="str_gestionar_rutina">Gestionar Rutina</string>
+    <string name="str_gestionar_cronograma">Gestionar Cronograma</string>
+    <string name="str_nombre">Nombre</string>
+    <string name="str_url_imagen">Url Imagen</string>
+    <string name="btn_subir_imagen">Subir Imagen</string>
+    <string name="btn_insertar">Insertar</string>
+    <string name="btn_modificar">Modificar</string>
+    <string name="btn_borrar">Borrar</string>
+
+</resources>

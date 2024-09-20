@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for Night mode -->
+    <style name="Theme.PrimerParcial" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+    </style>
+
+    <!-- Custom dark theme -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Desactiva el ActionBar y el título -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- Colores personalizados para modo noche -->
+        <item name="colorPrimary">@color/white</item> <!-- Color oscuro principal -->
+        <item name="colorPrimaryDark">@color/oscuro</item> <!-- Gris oscuro para la barra de estado -->
+        <item name="colorAccent">@color/orange</item> <!-- Acento de color naranja para contraste -->
+        <item name="android:statusBarColor">@color/oscuro</item> <!-- Color de la barra de estado oscuro -->
+        <item name="android:navigationBarColor">@color/oscuro</item> <!-- Color de la barra de navegación oscuro -->
+        <item name="android:background">@color/black</item> <!-- Fondo oscuro de la aplicación -->
+    </style>
+</resources>
