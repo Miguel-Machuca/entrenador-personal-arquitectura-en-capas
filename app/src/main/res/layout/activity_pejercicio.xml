@@ -33,25 +33,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/iv_imagen_ejercicio"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground" />
 
         <Button
             android:id="@+id/btn_subir_imagen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/btn_subir_imagen"
-            android:gravity="center"/>
-
-        <ImageView
-            android:id="@+id/iv_imagen"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="16dp"
-            android:src="@drawable/ic_launcher_background"
-            android:gravity="center"/>
-
+            android:text="Subir Imagen"
+            android:layout_gravity="center" />
     </LinearLayout>
 
     <!-- Botones para guardar, actualizar y eliminar -->

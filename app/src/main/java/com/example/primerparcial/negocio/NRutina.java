@@ -101,6 +101,7 @@ public class NRutina {
         dDetalleRutina.eliminarEjerciciosPorRutina(idRutina);
     }
 
+
     public void iniciarBD(Context context) {
         this.context = context;
         this.dRutina.iniciarBD(context);
@@ -111,6 +112,20 @@ public class NRutina {
         } else {
             this.detalleRutina = new ArrayList<>();
         }
+    }
+
+    public NRutina buscar(int idRutina){
+        try {
+            if (idRutina != -1) {
+                DRutina dr = dRutina.buscar(idRutina);
+                if (dr != null) {
+                    return new NRutina(dr.getIdRutina(), dr.getNombre());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar el ejercicio: " + e.getMessage());
+        }
+        return null;
     }
 
     public DRutina getdRutina() {

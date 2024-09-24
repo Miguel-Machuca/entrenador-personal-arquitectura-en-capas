@@ -66,6 +66,7 @@ public class NEjercicio {
         return null;
     }
 
+
     public DEjercicio getdEjercicio() {
         return dEjercicio;
     }

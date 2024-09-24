@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.primerparcial.dato.DCliente;
 import com.example.primerparcial.dato.DDetalleCliente;
 import com.example.primerparcial.dato.DDetalleRutina;
+import com.example.primerparcial.dato.DEjercicio;
 import com.example.primerparcial.dato.DRutina;
 
 import java.util.ArrayList;
@@ -96,6 +97,20 @@ public class NCliente {
         DDetalleCliente dDetalleCliente = new DDetalleCliente();
         dDetalleCliente.iniciarBD(context);
         dDetalleCliente.eliminarObjetivosPorCliente(idCliente);
+    }
+
+    public NCliente buscar(int idCliente) {
+        try {
+            if (idCliente != -1) {
+                DCliente dc = dCliente.buscar(idCliente);
+                if (dc != null) {
+                    return new NCliente(dc.getIdCliente(), dc.getNombre(), dc.getApellido(), dc.getCelular());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al buscar al cliente: " + e.getMessage());
+        }
+        return null;
     }
 
     public void iniciarBD(Context context) {

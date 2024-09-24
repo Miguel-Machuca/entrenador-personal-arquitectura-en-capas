@@ -3,6 +3,7 @@ package com.example.primerparcial.presentacion;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.view.View;
@@ -14,10 +15,15 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.primerparcial.R;
 import com.example.primerparcial.negocio.NCliente;
 import com.example.primerparcial.negocio.NCronograma;
+import com.example.primerparcial.negocio.NEjercicio;
 import com.example.primerparcial.negocio.NRutina;
 import com.example.primerparcial.utils.ClienteAdapter;
 import com.example.primerparcial.utils.RutinaAdapter;
@@ -30,6 +36,7 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
     private int id = 0;
     private NCliente nCliente;
     private NRutina nRutina;
+    private NEjercicio nEjercicio;
     private int idCliente = -1;
     private int idRutina = -1;
     private String nombreCliente;
@@ -38,20 +45,24 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
     private String fecha;
     private Context context;
     private Spinner spClientes, spRutinas;
-    private Button btnInsertar, btnModificar, btnBorrar;
+    private Button btnInsertar, btnModificar, btnBorrar, btnEnviarRutina, btnEnviarEjercicios;
     private EditText txtFecha;
     private ListView listViewConsultar;
-    private List<String> nombres;
     private List<String> fechas;
     private List<Integer> idCronogramas;
     private List<Integer> idClientes;
     private List<Integer> idRutinas;
+    private List<Object []> ejercicios;
+    private static final String PREFS_NAME = "EnviarMensajesPrefs";
+    private static final String KEY_MENSAJES = "MensajesWhatsApp";
+    private static final String KEY_INDICE_ACTUAL = "IndiceActual";
 
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pcronograma);
         iniciar();
+
     }
 
     public void iniciar() {
@@ -60,6 +71,8 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
         btnInsertar = findViewById(R.id.btn_insertar_cronograma);
         btnModificar = findViewById(R.id.btn_modificar_cronograma);
         btnBorrar = findViewById(R.id.btn_borrar_cronograma);
+        btnEnviarRutina = findViewById(R.id.btn_enviar_rutina_cronograma);
+        btnEnviarEjercicios = findViewById(R.id.btn_enviar_ejercicios_cronograma);
         listViewConsultar = findViewById(R.id.lv_items_cronograma);
 
         spClientes = findViewById(R.id.spinner_cliente);
@@ -68,6 +81,8 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
         nCliente = new NCliente();
         nRutina = new NRutina();
         nCronograma = new NCronograma();
+        nEjercicio = new NEjercicio();
+        nEjercicio.iniciarBD(this);
         nCronograma.iniciarBD(this);
         nCliente .iniciarBD(this);
         nRutina.iniciarBD(this);
@@ -91,25 +106,31 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
             } else {
                 btnModificar.setEnabled(false);
                 btnBorrar.setEnabled(false);
+                btnEnviarEjercicios.setEnabled(false);
+                btnEnviarRutina.setEnabled(false);
             }
         }
     }
 
     private void consultarCronograma() {
-        nombres = new ArrayList<>();
         fechas = new ArrayList<>();
         idCronogramas = new ArrayList<>();
         idClientes = new ArrayList<>();
         idRutinas = new ArrayList<>();
+        ArrayList<String> fecha_nombre = new ArrayList<>();
         List<NCronograma> listaCronogramas = nCronograma.consultar();
         for (NCronograma cronograma : listaCronogramas){
             fechas.add(String.valueOf(cronograma.getdCronograma().getFecha()));
             idCronogramas.add(cronograma.getdCronograma().getIdCronograma());
             idClientes.add(cronograma.getdCronograma().getIdCliente());
             idRutinas.add(cronograma.getdCronograma().getIdRutina());
+
+            fecha_nombre.add(String.valueOf(cronograma.getdCronograma().getFecha()) + " - " +
+                    nCliente.buscar(cronograma.getdCronograma().getIdCliente()).getdCliente().getNombre() + " " +
+                    nCliente.buscar(cronograma.getdCronograma().getIdCliente()).getdCliente().getApellido());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fechas);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, fecha_nombre);
         listViewConsultar.setAdapter(adapter);
         listViewConsultar.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,11 +142,40 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
 
     private void cronogramaIdSeleccionado(int i) {
         id = idCronogramas.get(i);
-        fecha = nombres.get(i);
-        Bundle bolsa = new Bundle();
-        bolsa.putInt("id", id);
-        bolsa.putString("fecha", fecha);
-        iniciarNuevaActividad(bolsa);
+        fecha = fechas.get(i);  // Corrige: debería ser `fechas` en lugar de `nombres`
+        idCliente = idClientes.get(i);  // Obtén el idCliente correspondiente
+        idRutina = idRutinas.get(i);    // Obtén el idRutina correspondiente
+
+        txtFecha.setText(fecha);
+
+        seleccionarClienteSpinner(idCliente);
+        seleccionarRutinaSpinner(idRutina);
+
+        btnInsertar.setEnabled(false);
+        btnModificar.setEnabled(true);
+        btnBorrar.setEnabled(true);
+        btnEnviarRutina.setEnabled(true);
+        btnEnviarEjercicios.setEnabled(true);
+    }
+
+    private void seleccionarClienteSpinner(int idCliente) {
+        for (int i = 0; i < spClientes.getCount(); i++) {
+            NCliente cliente = (NCliente) spClientes.getItemAtPosition(i);
+            if (cliente.getdCliente().getIdCliente() == idCliente) {
+                spClientes.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    private void seleccionarRutinaSpinner(int idRutina) {
+        for (int i = 0; i < spRutinas.getCount(); i++) {
+            NRutina rutina = (NRutina) spRutinas.getItemAtPosition(i);
+            if (rutina.getdRutina().getIdRutina() == idRutina) {
+                spRutinas.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void iniciarNuevaActividad(Bundle bolsa) {
@@ -138,6 +188,8 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
         btnInsertar.setOnClickListener(this);
         btnModificar.setOnClickListener(this);
         btnBorrar.setOnClickListener(this);
+        btnEnviarRutina.setOnClickListener(this);
+        btnEnviarEjercicios.setOnClickListener(this);
     }
 
     public void crearCalendario(){
@@ -151,12 +203,10 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
                 int mes = calendar.get(Calendar.MONTH);
                 int dia = calendar.get(Calendar.DAY_OF_MONTH);
 
-                // Muestra el DatePickerDialog
                 DatePickerDialog datePickerDialog = new DatePickerDialog(PCronograma.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                                // Mes +1 porque enero es 0
                                 String fechaSeleccionada = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
                                 etFecha.setText(fechaSeleccionada);
                             }
@@ -260,6 +310,68 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
         }
     }
 
+    private void enviarCronograma() {
+        NCliente cliente = nCliente.buscar(idCliente);
+        NRutina rutinaObj = nRutina.buscar(idRutina);
+
+        if (cliente == null || rutinaObj == null) {
+            mostrarMensaje("Error: Cliente o Rutina no encontrados.");
+            return;
+        }
+        String numero = cliente.getdCliente().getCelular();
+        if (numero == null || numero.isEmpty()) {
+            mostrarMensaje("Número de teléfono no disponible.");
+            return;
+        }
+        String numeroTelefono = "+591" + numero;
+        String rutina = rutinaObj.getdRutina().getNombre();
+
+        List<Object[]> ejercicios = nRutina.listarEjercicio(idRutina);
+        if (ejercicios == null || ejercicios.isEmpty()) {
+            mostrarMensaje("No hay ejercicios para esta rutina.");
+            return;
+        }
+
+        StringBuilder complemento = new StringBuilder("\n"); // Usar StringBuilder para mejor rendimiento
+        for (Object[] ejercicio : ejercicios) {
+            NEjercicio ejercicioObj = nEjercicio.buscar((int) ejercicio[0]);
+            if (ejercicioObj != null) {
+                complemento.append("_").append(ejercicioObj.getdEjercicio().getNombre()).append("_\n")
+                        .append("* Series: ").append(ejercicio[1]).append("\n")
+                        .append("* Repeticiones: ").append(ejercicio[2]).append("\n")
+                        .append("* Descanso: ").append(ejercicio[3]).append(" segundos entre series\n");
+            }
+        }
+
+        String mensajeFinal = "*Fecha:* " + convertirFecha(fecha) + "\n" +
+                "*Nombre de la Rutina:* " + rutina + complemento.toString();
+
+        nCronograma.enviarMensajeWhatsApp(this, numeroTelefono, mensajeFinal);
+
+    }
+
+    private void enviarEjercicios() {
+        NRutina rutinaObj = nRutina.buscar(idRutina);
+
+        String rutina = rutinaObj.getdRutina().getNombre();
+
+        List<Object[]> ejercicios = nRutina.listarEjercicio(idRutina);
+        if (ejercicios == null || ejercicios.isEmpty()) {
+            mostrarMensaje("No hay ejercicios para esta rutina.");
+            return;
+        }
+        List<Uri> listaImagenes = new ArrayList<>();
+        for (Object[] ejercicio : ejercicios) {
+            NEjercicio ejercicioObj = nEjercicio.buscar((int) ejercicio[0]);
+            if (ejercicioObj != null) {
+                Uri uriImagen = Uri.parse(ejercicioObj.getdEjercicio().getUrlImagen());
+                listaImagenes.add(uriImagen);
+            }
+        }
+
+        nCronograma.enviarMensajeWhatsAppConImagenes(this, listaImagenes);
+    }
+
     private void reiniciarActividad() {
         limpiarCampos();
         consultarCronograma();
@@ -272,6 +384,22 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
         btnModificar.setEnabled(false);
         btnBorrar.setEnabled(false);
     }
+
+    public static String convertirFecha(String fecha) {
+        try {
+
+            SimpleDateFormat formatoEntrada = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("es"));
+
+            Date fechaDate = formatoEntrada.parse(fecha);
+
+            SimpleDateFormat formatoSalida = new SimpleDateFormat("EEEE dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("es"));
+            return formatoSalida.format(fechaDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     private void mostrarMensaje(String mensaje) {
         Toast.makeText(context, mensaje, Toast.LENGTH_LONG).show();
@@ -286,6 +414,12 @@ public class PCronograma extends AppCompatActivity implements View.OnClickListen
             modificarCronograma();
         } else if (id == R.id.btn_borrar_cronograma) {
             borrarCronograma();
+        } else if (id == R.id.btn_enviar_rutina_cronograma) {
+            enviarCronograma();
+        } else if (id == R.id.btn_enviar_ejercicios_cronograma) {
+            enviarEjercicios();
         }
     }
+
+
 }
