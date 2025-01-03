@@ -14,7 +14,6 @@ public class DObjetivo {
     private SQLiteDatabase database;
 
     public DObjetivo() {
-
         this(-1, "");
     }
 

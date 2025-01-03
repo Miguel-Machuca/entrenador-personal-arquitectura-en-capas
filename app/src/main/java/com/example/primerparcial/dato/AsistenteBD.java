@@ -32,7 +32,6 @@ public class AsistenteBD extends SQLiteOpenHelper {
     public static final String COLUMN_DURACIONREPOSO = "duracion_reposo";
     public static final String COLUMN_FECHA = "fecha";
     public static final String COLUMN_DESCRIPCION = "descripcion";
-
     public static AsistenteBD instance;
 
     public static synchronized AsistenteBD getInstance(Context context) {

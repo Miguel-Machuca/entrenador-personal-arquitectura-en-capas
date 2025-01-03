@@ -137,12 +137,22 @@
     </LinearLayout>
 
     <!-- Lista de ítems -->
-    <ListView
-        android:id="@+id/lv_items_cliente"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="1dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"/>
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="24dp">
+
+        <ListView
+            android:id="@+id/lv_items_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:dividerHeight="1dp"
+            android:layout_marginTop="16dp"
+            android:gravity="center"/>
+
+    </LinearLayout>
 
 </LinearLayout>
